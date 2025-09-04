@@ -42,7 +42,7 @@ public class HabboHotel {
         mClientManager.StartConnectionChecker();
 
         // Print that we are done!
-        IonEnvironment.getLog().WriteLine(String.format("Initialized project 'Habbo Hotel' for version %d.", mVersion));
+        IonEnvironment.getLog().writeLine(String.format("Initialized project 'Habbo Hotel' for version %d.", mVersion));
     }
 
     public void Destroy() {
@@ -52,7 +52,7 @@ public class HabboHotel {
             getClients().StopConnectionChecker();
         }
 
-        IonEnvironment.getLog().WriteLine(String.format("Destroyed project 'Habbo Hotel' for version %d.", mVersion));
+        IonEnvironment.getLog().writeLine(String.format("Destroyed project 'Habbo Hotel' for version %d.", mVersion));
     }
 
     /// <summary>

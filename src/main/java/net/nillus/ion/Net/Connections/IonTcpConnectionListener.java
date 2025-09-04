@@ -41,7 +41,7 @@ public class IonTcpConnectionListener {
             pIP = InetAddress.getByName(sLocalIP);
         } catch (IOException e) {
             pIP = InetAddress.getLoopbackAddress();
-            IonEnvironment.getLog().WriteWarning(String.format("Connection listener was unable to parse the given local IP address '%s', now binding listener to '%s'.", sLocalIP, pIP.getHostAddress()));
+            IonEnvironment.getLog().writeWarning(String.format("Connection listener was unable to parse the given local IP address '%s', now binding listener to '%s'.", sLocalIP, pIP.getHostAddress()));
         }
 
         mFactory = new IonTcpConnectionFactory();
@@ -58,11 +58,11 @@ public class IonTcpConnectionListener {
 
         try {
             mListener = new ServerSocket(pPort, LISTENER_CONNECTIONREQUEST_QUEUE_LENGTH, pIP);
-            IonEnvironment.getLog().WriteLine(String.format("IonTcpConnectionListener initialized and bound to %s:%d.", pIP.getHostAddress(), pPort));
+            IonEnvironment.getLog().writeLine(String.format("IonTcpConnectionListener initialized and bound to %s:%d.", pIP.getHostAddress(), pPort));
             mIsListening = true;
             waitForNextConnection();
         } catch (IOException e) {
-            IonEnvironment.getLog().WriteError("Failed to bind the server socket: " + e.getMessage());
+            IonEnvironment.getLog().writeError("Failed to bind the server socket: " + e.getMessage());
         }
     }
 
@@ -77,7 +77,7 @@ public class IonTcpConnectionListener {
         try {
             mListener.close();
         } catch (IOException e) {
-            IonEnvironment.getLog().WriteError("Failed to close the server socket: " + e.getMessage());
+            IonEnvironment.getLog().writeError("Failed to close the server socket: " + e.getMessage());
         }
     }
 
@@ -107,7 +107,7 @@ public class IonTcpConnectionListener {
                         mManager.HandleNewConnection(pConnection);
                     }
                 } catch (IOException e) {
-                    IonEnvironment.getLog().WriteError("Failed to accept a connection: " + e.getMessage());
+                    IonEnvironment.getLog().writeError("Failed to accept a connection: " + e.getMessage());
                 } finally {
                     if (mIsListening)
                         waitForNextConnection(); // Re-start the process for next connection

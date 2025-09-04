@@ -9,7 +9,7 @@ public class HabboAuthenticator {
     // End of constructor region
 
     // Methods region
-    public Habbo Login(String sUsername, String sPassword) throws IncorrectLoginException {
+    public Habbo login(String sUsername, String sPassword) throws IncorrectLoginException {
         // Do not use HabboManager.GetHabbo(String) here, as caching is planned to be implemented there
         Habbo pHabbo = new Habbo();
         try {

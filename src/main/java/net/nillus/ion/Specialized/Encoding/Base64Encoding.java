@@ -32,7 +32,7 @@ public class Base64Encoding {
      * @param bzData The input byte array to decode.
      * @return The decoded 32 bit integer.
      */
-    public static int DecodeInt32(byte[] bzData) {
+    public static int decodeInt32(byte[] bzData) {
         int i = 0;
         int j = 0;
         for (int k = bzData.length - 1; k >= 0; k--) {

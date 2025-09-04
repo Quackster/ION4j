@@ -34,14 +34,14 @@ public class IonEnvironment {
      */
     public static void initialize() {
         mLog.setMinimumLogImportancy(LogType.Debug);
-        mLog.WriteLine("Initializing Ion environment.");
+        mLog.writeLine("Initializing Ion environment.");
 
         try {
             // Try to initialize configuration
             try {
                 mConfig = ConfigurationModule.loadFromFile("settings");
             } catch (FileNotFoundException ex) {
-                mLog.WriteError("Failed to load configuration file, exception message was: " + ex.getMessage());
+                mLog.writeError("Failed to load configuration file, exception message was: " + ex.getMessage());
                 IonEnvironment.destroy();
                 return;
             }
@@ -73,9 +73,9 @@ public class IonEnvironment {
             // Try to initialize Habbo Hotel
             mHabboHotel = new HabboHotel();
 
-            mLog.WriteLine("Initialized Ion environment.");
+            mLog.writeLine("Initialized Ion environment.");
         } catch (Exception ex) { // Catch all other exceptions
-            mLog.WriteError("Unhandled exception occurred during initialization of Ion environment. Exception message: " + ex.getMessage());
+            mLog.writeError("Unhandled exception occurred during initialization of Ion environment. Exception message: " + ex.getMessage());
         }
     }
 
@@ -83,7 +83,7 @@ public class IonEnvironment {
      * Destroys the Ion server environment and exits the application.
      */
     public static void destroy() {
-        mLog.WriteLine("Destroying Ion environment.");
+        mLog.writeLine("Destroying Ion environment.");
 
         // Destroy Habbo Hotel 8-) (and all inner modules etc)
         if (getHabboHotel() != null) {
@@ -92,7 +92,7 @@ public class IonEnvironment {
 
         // Clear connections
         if (getTcpConnections() != null) {
-            IonEnvironment.getLog().WriteLine("Destroying TCP connection manager.");
+            IonEnvironment.getLog().writeLine("Destroying TCP connection manager.");
             getTcpConnections().GetListener().stop();
             getTcpConnections().GetListener().destroy();
             getTcpConnections().DestroyManager();
@@ -100,13 +100,13 @@ public class IonEnvironment {
 
         // Stop database
         if (getDatabase() != null) {
-            IonEnvironment.getLog().WriteLine("Destroying database " + getDatabase().toString());
+            IonEnvironment.getLog().writeLine("Destroying database " + getDatabase().toString());
             getDatabase().stopMonitor();
             getDatabase().destroyClients();
             getDatabase().destroyManager();
         }
 
-        mLog.WriteLine("Press a key to exit.");
+        mLog.writeLine("Press a key to exit.");
 
         try {
             System.in.read();

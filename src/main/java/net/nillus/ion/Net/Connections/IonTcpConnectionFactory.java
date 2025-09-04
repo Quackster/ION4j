@@ -24,7 +24,7 @@ public class IonTcpConnectionFactory {
             return null;
 
         IonTcpConnection pConnection = new IonTcpConnection(++mConnectionCounter, pSocket);
-        IonEnvironment.getLog().WriteInformation(String.format("Created IonTcpConnection [%d] for %s.", pConnection.getID(), pConnection.getIpAddress()));
+        IonEnvironment.getLog().writeInformation(String.format("Created IonTcpConnection [%d] for %s.", pConnection.getID(), pConnection.getIpAddress()));
 
         return pConnection;
     }

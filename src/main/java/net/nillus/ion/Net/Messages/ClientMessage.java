@@ -85,7 +85,7 @@ public class ClientMessage implements IHabboMessage {
     }
 
     private byte[] readFixedValue() {
-        int Length = Base64Encoding.DecodeInt32(this.readBytes(2));
+        int Length = Base64Encoding.decodeInt32(this.readBytes(2));
         return this.readBytes(Length);
     }
 
@@ -94,7 +94,7 @@ public class ClientMessage implements IHabboMessage {
     }
 
     public int popInt32() {
-        return Base64Encoding.DecodeInt32(this.readBytes(2));
+        return Base64Encoding.decodeInt32(this.readBytes(2));
     }
 
     public long popUInt32() {

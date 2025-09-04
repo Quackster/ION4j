@@ -18,7 +18,7 @@ public class Logging {
     }
 
     // Methods
-    private void WriteLineInternal(String sLine, LogType pLogType, boolean ignoreLogType) {
+    private void writeLineInternal(String sLine, LogType pLogType, boolean ignoreLogType) {
         while (mBusy) { } // Hang on /b/rotahs
         mBusy = true;
 
@@ -42,35 +42,35 @@ public class Logging {
         mBusy = false;
     }
 
-    public void WriteLine(String sLine) {
-        WriteLineInternal(sLine, LogType.Information, true);
+    public void writeLine(String sLine) {
+        writeLineInternal(sLine, LogType.Information, true);
     }
 
-    public void WriteInformation(String sLine) {
+    public void writeInformation(String sLine) {
         if (mMinimumLogImportancy.ordinal() <= LogType.Information.ordinal())
-            WriteLineInternal(sLine, LogType.Information, false);
+            writeLineInternal(sLine, LogType.Information, false);
     }
 
-    public void WriteWarning(String sLine) {
+    public void writeWarning(String sLine) {
         if (mMinimumLogImportancy.ordinal() <= LogType.Warning.ordinal())
-            WriteLineInternal(sLine, LogType.Warning, false);
+            writeLineInternal(sLine, LogType.Warning, false);
     }
 
-    public void WriteError(String sLine) {
+    public void writeError(String sLine) {
         if (mMinimumLogImportancy.ordinal() <= LogType.Error.ordinal())
-            WriteLineInternal(sLine, LogType.Error, false);
+            writeLineInternal(sLine, LogType.Error, false);
     }
 
-    public void WriteUnhandledExceptionError(String sMethodName, Throwable ex) {
-        WriteError("Unhandled exception in " + sMethodName + "() method, "
+    public void writeUnhandledExceptionError(String sMethodName, Throwable ex) {
+        writeError("Unhandled exception in " + sMethodName + "() method, "
                 + "exception message: " + ex.getMessage() + ", "
                 + "stack trace: " + ex.getStackTrace());
     }
 
-    public void WriteConfigurationParseError(String sField) {
+    public void writeConfigurationParseError(String sField) {
         if (mMinimumLogImportancy.ordinal() <= LogType.Error.ordinal()) {
             String sLine = String.format("Could not parse configuration field '%s'.", sField);
-            WriteLineInternal(sLine, LogType.Error, false);
+            writeLineInternal(sLine, LogType.Error, false);
         }
     }
 }

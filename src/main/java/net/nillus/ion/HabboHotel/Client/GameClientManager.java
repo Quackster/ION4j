@@ -125,7 +125,7 @@ public class GameClientManager {
             mClients.remove(clientID);
 
             // Log event
-            IonEnvironment.getLog().WriteInformation("Stopped client " + clientID);
+            IonEnvironment.getLog().writeInformation("Stopped client " + clientID);
         }
     }
 

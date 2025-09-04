@@ -73,7 +73,7 @@ public class DatabaseManager {
                             if (client.getInactivity() >= 60 * 1000) { // Not used in the last %x% seconds
                                 client.disconnect(); // Temporarily close connection
 
-                                IonEnvironment.getLog().WriteInformation("Disconnected database client #" + client.getHandle());
+                                IonEnvironment.getLog().writeInformation("Disconnected database client #" + client.getHandle());
                             }
                         }
                     }
@@ -83,7 +83,7 @@ public class DatabaseManager {
             } catch (InterruptedException ex) {
                 break;
             } catch (Exception ex) {
-                IonEnvironment.getLog().WriteError(ex.getMessage());
+                IonEnvironment.getLog().writeError(ex.getMessage());
             }
         }
     }
@@ -132,12 +132,12 @@ public class DatabaseManager {
                     if (clients.get(i).getState() == ConnectionState.CLOSED) {
                         try {
                             clients.get(i).connect();
-                            IonEnvironment.getLog().WriteInformation("Opening connection for database client #" + clients.get(i).getHandle());
+                            IonEnvironment.getLog().writeInformation("Opening connection for database client #" + clients.get(i).getHandle());
                         } catch (Exception e) {
                             // Handle exception
                         }
                     } else if (clients.get(i).getState() == ConnectionState.OPEN) {
-                        IonEnvironment.getLog().WriteLine("Handed out client #" + (i + 1));
+                        IonEnvironment.getLog().writeLine("Handed out client #" + (i + 1));
                         clientAvailable.set(i, false);
                         return clients.get(i);
                     }
@@ -167,7 +167,7 @@ public class DatabaseManager {
             DatabaseClient pAnonymous = new DatabaseClient(0, this);
                 pAnonymous.connect();
 
-            IonEnvironment.getLog().WriteInformation("Handed out anonymous client.");
+            IonEnvironment.getLog().writeInformation("Handed out anonymous client.");
 
             return pAnonymous;
         }
@@ -176,7 +176,7 @@ public class DatabaseManager {
     public void releaseClient(int handle) {
         if (clients.size() >= handle - 1) {
             clientAvailable.set(handle - 1, true);
-            IonEnvironment.getLog().WriteInformation("Released client #" + handle);
+            IonEnvironment.getLog().writeInformation("Released client #" + handle);
         }
     }
 
@@ -213,7 +213,7 @@ public class DatabaseManager {
         try (DatabaseClient dbClient = getClient()) {
             obj.INSERT(dbClient);
         } catch (Exception e) {
-            IonEnvironment.getLog().WriteError(e.getMessage());
+            IonEnvironment.getLog().writeError(e.getMessage());
         }
     }
 
@@ -221,7 +221,7 @@ public class DatabaseManager {
         try (DatabaseClient dbClient = getClient()) {
             obj.DELETE(dbClient);
         } catch (Exception e) {
-            IonEnvironment.getLog().WriteError(e.getMessage());
+            IonEnvironment.getLog().writeError(e.getMessage());
         }
     }
 
@@ -229,7 +229,7 @@ public class DatabaseManager {
         try (DatabaseClient dbClient = getClient()) {
             obj.UPDATE(dbClient);
         } catch (Exception e) {
-            IonEnvironment.getLog().WriteError(e.getMessage());
+            IonEnvironment.getLog().writeError(e.getMessage());
         }
     }
 

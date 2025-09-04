@@ -12,36 +12,28 @@ import net.nillus.ion.Specialized.Encoding.Base64Encoding;
 import java.io.IOException;
 
 public class GameClient {
-    // Fields
     private final int mID;
     private ClientMessageHandler mMessageHandler;
     private Habbo mHabbo;
     private boolean mPonged;
 
-    // Properties
-    public int getID() {
-        return mID;
-    }
-
-    public boolean isLoggedIn() {
-        return (mHabbo != null);
-    }
-
-    public boolean isPingOK() {
-        return mPonged;
-    }
-
-    public void setPingOK(boolean value) {
-        mPonged = value;
-    }
-
-    // Constructors
     public GameClient(int clientID) {
         mID = clientID;
         mMessageHandler = new ClientMessageHandler(this);
     }
 
-    // Methods
+    public int getID() {
+        return mID;
+    }
+
+    public boolean isLoggedIn() {
+        return mHabbo != null;
+    }
+
+    public void setPingOK(boolean ponged) {
+        this.mPonged = ponged;
+    }
+
     public IonTcpConnection getConnection() {
         return IonEnvironment.getTcpConnections().GetConnection(mID);
     }
@@ -55,93 +47,78 @@ public class GameClient {
     }
 
     public void startConnection() throws IOException {
-        IonTcpConnection pConnection = IonEnvironment.getTcpConnections().GetConnection(mID);
-        if (pConnection != null) {
-            // Register request handlers
-            // mMessageHandler.registerGlobal();
-            // mMessageHandler.registerPreLogin();
+        IonTcpConnection connection = getConnection();
+        if (connection != null) {
+            mMessageHandler.registerGlobal();
+            mMessageHandler.registerPreLogin();
 
-            // Send HELLO to client
-            ServerMessage HELLO = new ServerMessage(0); // "@@"
-            pConnection.sendMessage(HELLO);
+            ServerMessage helloMessage = new ServerMessage(0); // "@@"
+            connection.sendMessage(helloMessage);
 
-            // Create data router and start waiting for data
             IonTcpConnection.RouteReceivedDataCallback dataRouter = this::handleConnectionData;
-            pConnection.start(dataRouter);
+            connection.start(dataRouter);
         }
     }
 
     public void stop() {
-        // Leave room
-        // Update last online
         mHabbo = null;
-
         mMessageHandler.Destroy();
         mMessageHandler = null;
     }
 
-    public void handleConnectionData(byte[] Data) {
+    public void handleConnectionData(byte[] data) {
         int pos = 0;
-        while (pos < Data.length) {
+        while (pos < data.length) {
             try {
-                // Total length of message (without this): 3 Base64 bytes
-                int messageLength = Base64Encoding.DecodeInt32(new byte[]{Data[pos++], Data[pos++], Data[pos++]});
-
-                // ID of message: 2 Base64 bytes
-                int messageID = Base64Encoding.DecodeInt32(new byte[]{Data[pos++], Data[pos++]});
-
-                // Data of message: (messageLength - 2) bytes
-                byte[] Content = new byte[messageLength - 2];
-                for (int i = 0; i < Content.length; i++) {
-                    Content[i] = Data[pos++];
+                int messageLength = Base64Encoding.decodeInt32(new byte[]{data[pos++], data[pos++], data[pos++]});
+                int messageID = Base64Encoding.decodeInt32(new byte[]{data[pos++], data[pos++]});
+                byte[] content = new byte[messageLength - 2];
+                for (int i = 0; i < content.length; i++) {
+                    content[i] = data[pos++];
                 }
 
-                // Create message object
-                ClientMessage pMessage = new ClientMessage(messageID, Content);
-
-                // Handle message object
-                mMessageHandler.HandleRequest(pMessage);
-            } catch (IndexOutOfBoundsException e) { // Bad formatting!
+                ClientMessage message = new ClientMessage(messageID, content);
+                mMessageHandler.handleRequest(message);
+            } catch (IndexOutOfBoundsException e) {
                 IonEnvironment.getHabboHotel().getClients().stopClient(mID);
-            } catch (Exception ex) {
-                IonEnvironment.getLog().WriteUnhandledExceptionError("GameClient.HandleConnectionData", ex);
+            } catch (Exception e) {
+                IonEnvironment.getLog().writeUnhandledExceptionError("GameClient.HandleConnectionData", e);
             }
         }
     }
 
-    public void login(String sUsername, String sPassword) {
+    public void login(String username, String password) {
         try {
-            // Try to login
-            mHabbo = IonEnvironment.getHabboHotel().getAuthenticator().Login(sUsername, sPassword);
+            mHabbo = IonEnvironment.getHabboHotel().getAuthenticator().login(username, password);
 
-            // Authenticator has forced unique login now
+            ServerMessage message1 = new ServerMessage(2); // "@B"
+            message1.appendString("fuse_login");
+            getConnection().sendMessage(message1);
 
-            // Complete login
-            ServerMessage pMessage = new ServerMessage(2); // "@B"
-            pMessage.appendString("fuse_login");
-            getConnection().sendMessage(pMessage);
+            ServerMessage message2 = new ServerMessage(3); // "@C"
+            getConnection().sendMessage(message2);
 
-            pMessage.initialize(3); // "@C"
-            getConnection().sendMessage(pMessage);
-
-            // mMessageHandler.unRegisterPreLogin();
-            // mMessageHandler.registerUser();
-        } catch (IncorrectLoginException exLogin) {
-            sendClientError(exLogin.getMessage());
+            mMessageHandler.unregisterPreLogin();
+            mMessageHandler.registerUser();
+        } catch (IncorrectLoginException e) {
+            sendClientError(e.getMessage());
         }
     }
 
     public void sendClientError(String sError) {
-        ServerMessage pMessage = new ServerMessage(33); // "@a"
-        pMessage.append(sError);
-
-        getConnection().sendMessage(pMessage);
+        ServerMessage message = new ServerMessage(33); // "@a"
+        message.append(sError);
+        getConnection().sendMessage(message);
     }
 
     public void sendBanMessage(String sText) {
-        ServerMessage pMessage = new ServerMessage(35); // "@c"
-        pMessage.append(sText);
+        ServerMessage message = new ServerMessage(35); // "@c"
+        message.append(sText);
+        getConnection().sendMessage(message);
+    }
 
-        getConnection().sendMessage(pMessage);
+    // Helper method added by Quackster
+    public void sendMessage(ServerMessage response) {
+        this.getConnection().sendMessage(response);
     }
 }
