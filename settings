@@ -19,7 +19,7 @@ db1.maxpoolsize=25
 
 # TCP listener #
 net.tcp.localip=127.0.0.1
-net.tcp.port=30000
+net.tcp.port=30001
 net.tcp.maxcon=255
 
 # Habbo Hotel #

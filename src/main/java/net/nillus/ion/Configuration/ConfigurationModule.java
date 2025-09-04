@@ -45,25 +45,9 @@ public class ConfigurationModule {
         }
     }
 
-    public boolean tryParseUInt32(String sField, UIntHolder i) {
-        boolean Success = Long.parseLong(this.get(sField)) >= 0; // Java doesn't have unsigned int
-        if (Success) {
-            i.value = Long.parseLong(this.get(sField));
-        } else {
-            IonEnvironment.getLog().WriteConfigurationParseError(sField);
-        }
-        return Success;
-    }
-
     public int tryParseInt32(String sField) {
         IntHolder i = new IntHolder();
         tryParseInt32(sField, i);
-        return i.value;
-    }
-
-    public long tryParseUInt32(String sField) { // Using long for unsigned equivalent
-        UIntHolder i = new UIntHolder();
-        tryParseUInt32(sField, i);
         return i.value;
     }
 

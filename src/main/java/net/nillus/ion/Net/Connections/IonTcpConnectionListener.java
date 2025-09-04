@@ -14,7 +14,7 @@ public class IonTcpConnectionListener {
     /** The maximum length of the connection request queue for the listener as an integer. */
     private static final int LISTENER_CONNECTIONREQUEST_QUEUE_LENGTH = 1;
     private InetAddress pIP;
-    private int Port;
+    private int pPort;
 
     /** A ServerSocket that listens for connections. */
     private ServerSocket mListener = null;
@@ -36,6 +36,7 @@ public class IonTcpConnectionListener {
      */
     public IonTcpConnectionListener(String sLocalIP, int Port, IonTcpConnectionManager pManager) {
         pIP = null;
+        pPort = Port;
         try {
             pIP = InetAddress.getByName(sLocalIP);
         } catch (IOException e) {
@@ -56,8 +57,8 @@ public class IonTcpConnectionListener {
             return;
 
         try {
-            mListener = new ServerSocket(Port, LISTENER_CONNECTIONREQUEST_QUEUE_LENGTH, pIP);
-            IonEnvironment.getLog().WriteLine(String.format("IonTcpConnectionListener initialized and bound to %s:%d.", pIP.getHostAddress(), Port));
+            mListener = new ServerSocket(pPort, LISTENER_CONNECTIONREQUEST_QUEUE_LENGTH, pIP);
+            IonEnvironment.getLog().WriteLine(String.format("IonTcpConnectionListener initialized and bound to %s:%d.", pIP.getHostAddress(), pPort));
             mIsListening = true;
             waitForNextConnection();
         } catch (IOException e) {

@@ -215,7 +215,7 @@ public class Habbo implements IDataObject {
     }
 
     @Override
-    public void INSERT(DatabaseClient dbClient) {
+    public void INSERT(DatabaseClient dbClient) throws Exception {
         try (var db = IonEnvironment.getDatabase().getClient()) {
             String sql = "INSERT INTO users" +
                     "(username,password,signedup,email,dob,motto,figure,gender,coins,films,gametickets) " +
@@ -223,27 +223,23 @@ public class Habbo implements IDataObject {
             try (PreparedStatement stmt = db.getConnection().prepareStatement(sql)) {
                 addUserParams(stmt);
                 stmt.executeUpdate();
-            } catch (Exception e) {
-                throw new RuntimeException(e);
             }
         }
     }
 
     @Override
-    public void DELETE(DatabaseClient dbClient) {
+    public void DELETE(DatabaseClient dbClient) throws SQLException {
         try (var db = IonEnvironment.getDatabase().getClient()) {
             String sql = "DELETE FROM users WHERE id = ? LIMIT 1;";
             try (PreparedStatement stmt = db.getConnection().prepareStatement(sql)) {
                 stmt.setLong(1, mID);
                 stmt.executeUpdate();
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
             }
         }
     }
 
     @Override
-    public void UPDATE(DatabaseClient dbClient) {
+    public void UPDATE(DatabaseClient dbClient) throws Exception {
         try (var db = IonEnvironment.getDatabase().getClient()) {
             String sql = "UPDATE users " +
                     "SET username=?,password=?,signedup=?,email=?,dob=?,motto=?,figure=?,gender=?,coins=?,films=?,gametickets=? " +
@@ -253,8 +249,6 @@ public class Habbo implements IDataObject {
                 addUserParams(stmt);
                 stmt.setLong(13, mID);
                 stmt.executeUpdate();
-            } catch (Exception e) {
-                throw new RuntimeException(e);
             }
         }
     }

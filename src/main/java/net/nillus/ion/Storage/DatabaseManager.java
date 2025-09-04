@@ -122,49 +122,54 @@ public class DatabaseManager {
         return connectionString.toString();
     }*/
 
-    public DatabaseClient getClient() {
-        try {
-            synchronized (this) {
-                for (int i = 0; i < clients.size(); i++) {
-                    if (clientAvailable.get(i)) {
-                        clientStarvationCounter = 0;
-
-                        DatabaseClient client = clients.get(i);
-                        if (!client.getConnection().isClosed()) {
-                            IonEnvironment.getLog().WriteInformation("Opening connection for database client #" + client.getHandle());
-                            client.connect();
+    public DatabaseClient getClient() throws SQLException {
+        synchronized (this) {
+            for (int i = 0; i < clients.size(); i++) {
+                if (clientAvailable.get(i)) {
+                    /*if (clients.get(i).getState() == ConnectionState.ERROR) {
+                        clients.add(i, new DatabaseClient((int) (i + 1), this)); // Create new client
+                    } else */
+                    if (clients.get(i).getState() == ConnectionState.CLOSED) {
+                        try {
+                            clients.get(i).connect();
+                            IonEnvironment.getLog().WriteInformation("Opening connection for database client #" + clients.get(i).getHandle());
+                        } catch (Exception e) {
+                            // Handle exception
                         }
-
-
-                        if (client.getConnection().isClosed()) {
-                            clientAvailable.set(i, false); // BRB
-
-                            client.updateLastActivity();
-                            return client;
-                        }
+                    } else if (clients.get(i).getState() == ConnectionState.OPEN) {
+                        IonEnvironment.getLog().WriteLine("Handed out client #" + (i + 1));
+                        clientAvailable.set(i, false);
+                        return clients.get(i);
                     }
                 }
+            }
 
-                clientStarvationCounter++;
+            // No clients?
+            clientStarvationCounter++;
 
-                if (clientStarvationCounter >= clients.size() / 2) {
-                    clientStarvationCounter = 0;
+            // Are we having a structural lack of clients?
+            if (clientStarvationCounter >= ((clients.size() + 1) / 2)) // Database hungry much?
+            {
+                // Heal starvation
+                clientStarvationCounter = 0;
 
-                    setClientAmount((int) (clients.size() * 1.3f));
+                // Increase client amount by 0.3
+                try {
+                    setClientAmount((int)(clients.size() + 1 * 1.3f));
+                } catch (SQLException e) {
 
-                    return getClient();
                 }
 
-                DatabaseClient pAnonymous = new DatabaseClient(0, this);
+                // Re-enter this method
+                return getClient();
+            }
+
+            DatabaseClient pAnonymous = new DatabaseClient(0, this);
                 pAnonymous.connect();
 
-                IonEnvironment.getLog().WriteInformation("Handed out anonymous client.");
+            IonEnvironment.getLog().WriteInformation("Handed out anonymous client.");
 
-                return pAnonymous;
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-            throw new RuntimeException(e);
+            return pAnonymous;
         }
     }
 

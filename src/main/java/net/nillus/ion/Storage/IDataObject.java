@@ -1,8 +1,10 @@
 package net.nillus.ion.Storage;
 
-public interface IDataObject {
-    void INSERT(DatabaseClient dbClient);
-    void DELETE(DatabaseClient dbClient);
+import java.sql.SQLException;
 
-    void UPDATE(DatabaseClient dbClient);
+public interface IDataObject {
+    void INSERT(DatabaseClient dbClient) throws Exception;
+    void DELETE(DatabaseClient dbClient) throws SQLException;
+
+    void UPDATE(DatabaseClient dbClient) throws Exception;
 }
